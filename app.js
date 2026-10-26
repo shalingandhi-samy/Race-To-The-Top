@@ -10,10 +10,10 @@ let competitors = buildings.flatMap((building, buildingIndex) => shifts.flatMap(
   return { id: `${building}-${shift}-${department}`, building, shift, department, points: base, movement: (shiftIndex + buildingIndex) % 3 === 0 ? 2 : (departmentIndex ? -1 : 0), kpis: department === 'IB' ? ibKpis : obKpis };
 })));
 const pastWeeks = [
-  { week: 'Week 41', winner: 'ORD1 S4 IB', points: 91 },
-  { week: 'Week 40', winner: 'PHL5 S1 OB', points: 89 },
-  { week: 'Week 39', winner: 'DFW5 S2 OB', points: 87 },
-  { week: 'Week 38', winner: 'PHL5 S1 OB', points: 90 }
+  { week: 'Week 41', winner: 'ORD1 S4 IB', points: 46 },
+  { week: 'Week 40', winner: 'PHL5 S1 OB', points: 44 },
+  { week: 'Week 39', winner: 'DFW5 S2 OB', points: 43 },
+  { week: 'Week 38', winner: 'PHL5 S1 OB', points: 45 }
 ];
 const streaks = [
   { name: 'PHL5 S1 OB', count: 8 }, { name: 'ORD1 S4 IB', count: 6 },
