@@ -5,6 +5,25 @@ const ibKpis = ['DECANT UPH', 'UNLOADING UPH', 'REMEDY UPH', 'PROBLEM SOLVE UPH'
 const obKpis = ['PICK UPH', 'BF UPH', 'BAGGING UPH', 'LOADING UPH', 'OB UPH', 'OTD', 'ULEARNS', 'AXONIFY %'];
 const names = ['PHL5 S1 OB', 'ORD1 S4 IB', 'DFW5 S2 OB', 'SFM2 S1 IB', 'IND3 S5 OB', 'PHL5 S4 IB', 'ORD1 S2 OB', 'DFW5 S5 IB'];
 
+function getWalmartWeek(date = new Date()) {
+  const fiscalYear = date.getMonth() >= 1 ? date.getFullYear() : date.getFullYear() - 1;
+  const fiscalStart = new Date(fiscalYear, 1, 1);
+  const weekStart = new Date(date);
+  weekStart.setHours(0, 0, 0, 0);
+  weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+  const firstSaturday = new Date(fiscalStart);
+  firstSaturday.setDate(firstSaturday.getDate() + ((6 - firstSaturday.getDay()) % 7));
+  const weekNumber = weekStart < firstSaturday ? 1 : Math.floor((weekStart - firstSaturday) / 604800000) + 1;
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekEnd.getDate() + 6);
+  return { fiscalYear, weekNumber, weekStart, weekEnd };
+}
+function formatDate(date) { return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); }
+function currentWeekLabel() {
+  const week = getWalmartWeek();
+  return `Walmart Week ${week.weekNumber} • FY${week.fiscalYear}`;
+}
+
 let competitors = buildings.flatMap((building, buildingIndex) => shifts.flatMap((shift, shiftIndex) => departments.map((department, departmentIndex) => {
   const base = 48 - (buildingIndex * 2) - shiftIndex - departmentIndex;
   return { id: `${building}-${shift}-${department}`, building, shift, department, points: base, movement: (shiftIndex + buildingIndex) % 3 === 0 ? 2 : (departmentIndex ? -1 : 0), kpis: department === 'IB' ? ibKpis : obKpis };
@@ -32,11 +51,22 @@ function renderTable() {
   if (filter === 'all') renderPodium(rows);
 }
 function renderHistory() {
-  $('#history-list').innerHTML = pastWeeks.map(item => `<div class="history-row"><strong>${item.week}</strong><span>${item.winner}</span><strong>${item.points} pts</strong></div>`).join('');
+  const current = getWalmartWeek();
+  $('#history-list').innerHTML = pastWeeks.map((item, index) => {
+    const weekNumber = Math.max(1, current.weekNumber - index - 1);
+    return `<div class="history-row"><strong>Walmart Week ${weekNumber}</strong><span>${item.winner}</span><strong>${item.points} pts</strong></div>`;
+  }).join('');
   $('#streak-list').innerHTML = streaks.map((item, index) => `<div class="streak-row"><strong><span>${index + 1}</span> ${item.name}</strong><span class="streak-score">${item.count} <small>podiums</small></span></div>`).join('');
+}
+function renderCalendar() {
+  const week = getWalmartWeek();
+  const label = currentWeekLabel();
+  $('#week-label').textContent = label;
+  $('#hero-week').textContent = label;
+  $('#week-label').title = `${formatDate(week.weekStart)} – ${formatDate(week.weekEnd)} • Saturday–Friday`;
 }
 function populateBuildings() { buildings.forEach(building => $('#building-filter').insertAdjacentHTML('beforeend', `<option value="${building}">${building}</option>`)); }
 function shuffleScores() { competitors = competitors.map(item => ({ ...item, points: Math.max(1, Math.min(50, item.points + Math.floor(Math.random() * 7) - 3)), movement: Math.floor(Math.random() * 5) - 2 })); renderTable(); }
 $('#building-filter').addEventListener('change', renderTable);
 $('#shuffle-button').addEventListener('click', shuffleScores);
-populateBuildings(); renderTable(); renderHistory();
+populateBuildings(); renderCalendar(); renderTable(); renderHistory();
