@@ -11,9 +11,9 @@ function getWalmartWeek(date = new Date()) {
   const weekStart = new Date(date);
   weekStart.setHours(0, 0, 0, 0);
   weekStart.setDate(weekStart.getDate() - weekStart.getDay());
-  const firstSaturday = new Date(fiscalStart);
-  firstSaturday.setDate(firstSaturday.getDate() + ((6 - firstSaturday.getDay()) % 7));
-  const weekNumber = weekStart < firstSaturday ? 1 : Math.floor((weekStart - firstSaturday) / 604800000) + 1;
+  const fiscalWeekOneStart = new Date(fiscalStart);
+  fiscalWeekOneStart.setDate(fiscalWeekOneStart.getDate() - ((fiscalWeekOneStart.getDay() + 1) % 7));
+  const weekNumber = Math.floor((weekStart - fiscalWeekOneStart) / 604800000) + 1;
   const weekEnd = new Date(weekStart);
   weekEnd.setDate(weekEnd.getDate() + 6);
   return { fiscalYear, weekNumber, weekStart, weekEnd };
