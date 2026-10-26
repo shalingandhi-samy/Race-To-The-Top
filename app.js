@@ -67,6 +67,29 @@ function renderCalendar() {
 }
 function populateBuildings() { buildings.forEach(building => $('#building-filter').insertAdjacentHTML('beforeend', `<option value="${building}">${building}</option>`)); }
 function shuffleScores() { competitors = competitors.map(item => ({ ...item, points: Math.max(1, Math.min(50, item.points + Math.floor(Math.random() * 7) - 3)), movement: Math.floor(Math.random() * 5) - 2 })); renderTable(); }
+function showView(view) {
+  document.body.dataset.view = view;
+  document.querySelectorAll('.nav-link').forEach(link => {
+    const active = link.dataset.view === view;
+    link.classList.toggle('active', active);
+    link.setAttribute('aria-current', active ? 'page' : 'false');
+  });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function initializeNavigation() {
+  document.querySelectorAll('.nav-link').forEach(link => {
+    link.addEventListener('click', event => {
+      event.preventDefault();
+      showView(link.dataset.view);
+      history.replaceState(null, '', link.getAttribute('href'));
+    });
+  });
+  $('#live-leaderboard-button').addEventListener('click', event => {
+    event.preventDefault();
+    showView('leaderboard');
+    history.replaceState(null, '', '#leaderboard');
+  });
+}
 function applyTheme(theme) {
   document.documentElement.dataset.theme = theme;
   const dark = theme === 'dark';
@@ -87,4 +110,6 @@ function toggleTheme() {
 $('#building-filter').addEventListener('change', renderTable);
 $('#shuffle-button').addEventListener('click', shuffleScores);
 $('#theme-toggle').addEventListener('click', toggleTheme);
+initializeNavigation();
+showView('home');
 populateBuildings(); initializeTheme(); renderCalendar(); renderTable(); renderHistory();

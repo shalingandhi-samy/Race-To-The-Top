@@ -14,20 +14,21 @@
         <span class="brand-mark">↗</span><span>RACE<span class="brand-accent">.</span></span>
       </a>
       <nav aria-label="Primary navigation">
-        <a class="nav-link active" href="#leaderboard">Live race</a>
-        <a class="nav-link" href="#history">History</a>
-        <a class="nav-link" href="#podium-history">Podium streaks</a>
+        <a class="nav-link active" data-view="home" href="#home">Home</a>
+        <a class="nav-link" data-view="leaderboard" href="#leaderboard">Leaderboard</a>
+        <a class="nav-link" data-view="history" href="#history">History</a>
+        <a class="nav-link" data-view="podium" href="#podium-history">Podium streaks</a>
       </nav>
       <div class="header-actions"><div class="week-pill"><span class="live-dot"></span><span id="week-label">Walmart Week</span></div><button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch to dark mode" aria-pressed="false"><span class="theme-icon" aria-hidden="true">◐</span><span class="theme-label">Dark mode</span></button></div>
     </header>
 
     <main id="top">
-      <section class="hero" aria-labelledby="page-title">
+      <section class="hero home-content" aria-labelledby="page-title">
         <div class="hero-copy">
           <p class="eyebrow">PRODUCTIVITY LEAGUE <span>•</span> <span id="hero-week">WALMART WEEK</span></p>
           <h1 id="page-title">RACE<br><em>TO THE</em><br><strong>TOP</strong></h1>
           <p class="hero-description">40 shifts. 8 KPIs. One finish line.<br>Every point moves the pack.</p>
-          <a class="primary-button" href="#leaderboard">View live leaderboard <span>→</span></a>
+          <a class="primary-button" id="live-leaderboard-button" href="#leaderboard">View live leaderboard <span>→</span></a>
         </div>
         <div class="hero-art" aria-label="Decorative racing illustration" role="img">
           <div class="sun"></div><div class="track track-one"></div><div class="track track-two"></div>
@@ -36,26 +37,26 @@
         </div>
       </section>
 
-      <section class="section-heading" id="leaderboard">
+      <section class="section-heading leaderboard-content" id="leaderboard">
         <div><p class="eyebrow">THE MAIN EVENT</p><h2>Live leaderboard</h2></div>
         <div class="controls"><label for="building-filter" class="sr-only">Filter by building</label><select id="building-filter"><option value="all">All buildings</option></select><button class="icon-button" id="shuffle-button" title="Shuffle demo scores" aria-label="Shuffle demo scores">↻</button></div>
       </section>
 
-      <section class="podium-grid" id="podium" aria-label="Top three shifts this week"></section>
+      <section class="podium-grid home-content leaderboard-content" id="podium" aria-label="Top three shifts this week"></section>
 
-      <section class="table-card">
+      <section class="table-card leaderboard-content">
         <div class="table-summary"><span>40 competitors</span><span class="legend"><i class="up"></i> Moving up <i class="down"></i> Moving down</span></div>
         <div class="table-wrap"><table><caption class="sr-only">Active week shift rankings</caption><thead><tr><th>Rank</th><th>Shift</th><th>Building</th><th>Department</th><th>Points</th><th>Movement</th><th>Progress</th></tr></thead><tbody id="leaderboard-body"></tbody></table></div>
       </section>
 
       <section class="lower-grid">
-        <article class="feature-card history-card" id="history">
+        <article class="feature-card history-card history-content" id="history">
           <div class="card-heading"><div><p class="eyebrow">LOOKING BACK</p><h2>Past weeks</h2></div><span class="card-icon">◷</span></div>
           <p class="muted">A quick look at who owned the finish line.</p>
           <div id="history-list" class="history-list"></div>
           <button class="text-button">View all race history <span>→</span></button>
         </article>
-        <article class="feature-card streak-card" id="podium-history">
+        <article class="feature-card streak-card podium-content" id="podium-history">
           <div class="card-heading"><div><p class="eyebrow">THE HALL OF FAME</p><h2>Top 3 appearances</h2></div><span class="card-icon trophy"></span></div>
           <p class="muted">Which shifts keep showing up on the podium?</p>
           <div id="streak-list" class="streak-list"></div>
