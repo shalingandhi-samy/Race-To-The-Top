@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="RACE TO THE TOP productivity leaderboard">
+  <title>RACE TO THE TOP | Productivity League</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#top" aria-label="Race to the Top home">
+        <span class="brand-mark">↗</span><span>RACE<span class="brand-accent">.</span></span>
+      </a>
+      <nav aria-label="Primary navigation">
+        <a class="nav-link active" href="#leaderboard">Live race</a>
+        <a class="nav-link" href="#history">History</a>
+        <a class="nav-link" href="#podium-history">Podium streaks</a>
+      </nav>
+      <div class="week-pill"><span class="live-dot"></span><span id="week-label">Active week</span></div>
+    </header>
+
+    <main id="top">
+      <section class="hero" aria-labelledby="page-title">
+        <div class="hero-copy">
+          <p class="eyebrow">PRODUCTIVITY LEAGUE <span>•</span> WEEK 42</p>
+          <h1 id="page-title">RACE<br><em>TO THE</em><br><strong>TOP</strong></h1>
+          <p class="hero-description">40 shifts. 8 KPIs. One finish line.<br>Every point moves the pack.</p>
+          <a class="primary-button" href="#leaderboard">View live leaderboard <span>→</span></a>
+        </div>
+        <div class="hero-art" aria-label="Decorative racing illustration" role="img">
+          <div class="sun"></div><div class="track track-one"></div><div class="track track-two"></div>
+          <div class="flag"><span>RACE</span><span>TO THE</span><span>TOP</span></div>
+          <div class="lane lane-a"><span>PHL5</span></div><div class="lane lane-b"><span>ORD1</span></div><div class="lane lane-c"><span>DFW5</span></div>
+        </div>
+      </section>
+
+      <section class="section-heading" id="leaderboard">
+        <div><p class="eyebrow">THE MAIN EVENT</p><h2>Live leaderboard</h2></div>
+        <div class="controls"><label for="building-filter" class="sr-only">Filter by building</label><select id="building-filter"><option value="all">All buildings</option></select><button class="icon-button" id="shuffle-button" title="Shuffle demo scores" aria-label="Shuffle demo scores">↻</button></div>
+      </section>
+
+      <section class="podium-grid" id="podium" aria-label="Top three shifts this week"></section>
+
+      <section class="table-card">
+        <div class="table-summary"><span>40 competitors</span><span class="legend"><i class="up"></i> Moving up <i class="down"></i> Moving down</span></div>
+        <div class="table-wrap"><table><caption class="sr-only">Active week shift rankings</caption><thead><tr><th>Rank</th><th>Shift</th><th>Building</th><th>Department</th><th>Points</th><th>Movement</th><th>Progress</th></tr></thead><tbody id="leaderboard-body"></tbody></table></div>
+      </section>
+
+      <section class="lower-grid">
+        <article class="feature-card history-card" id="history">
+          <div class="card-heading"><div><p class="eyebrow">LOOKING BACK</p><h2>Past weeks</h2></div><span class="card-icon">◷</span></div>
+          <p class="muted">A quick look at who owned the finish line.</p>
+          <div id="history-list" class="history-list"></div>
+          <button class="text-button">View all race history <span>→</span></button>
+        </article>
+        <article class="feature-card streak-card" id="podium-history">
+          <div class="card-heading"><div><p class="eyebrow">THE HALL OF FAME</p><h2>Top 3 appearances</h2></div><span class="card-icon trophy"></span></div>
+          <p class="muted">Which shifts keep showing up on the podium?</p>
+          <div id="streak-list" class="streak-list"></div>
+          <button class="text-button">Explore podium history <span>→</span></button>
+        </article>
+      </section>
+    </main>
+    <footer><span>RACE TO THE TOP</span><span>Productivity league dashboard • Demo scores until data connection</span></footer>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

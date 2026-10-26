@@ -1,0 +1,42 @@
+const buildings = ['PHL5', 'ORD1', 'DFW5', 'SFM2', 'IND3'];
+const shifts = ['S1', 'S2', 'S4', 'S5'];
+const departments = ['IB', 'OB'];
+const ibKpis = ['DECANT UPH', 'UNLOADING UPH', 'REMEDY UPH', 'PROBLEM SOLVE UPH', 'IB UPH', 'OTD', 'ULEARNS', 'AXONIFY %'];
+const obKpis = ['PICK UPH', 'BF UPH', 'BAGGING UPH', 'LOADING UPH', 'OB UPH', 'OTD', 'ULEARNS', 'AXONIFY %'];
+const names = ['PHL5 S1 OB', 'ORD1 S4 IB', 'DFW5 S2 OB', 'SFM2 S1 IB', 'IND3 S5 OB', 'PHL5 S4 IB', 'ORD1 S2 OB', 'DFW5 S5 IB'];
+
+let competitors = buildings.flatMap((building, buildingIndex) => shifts.flatMap((shift, shiftIndex) => departments.map((department, departmentIndex) => {
+  const base = 48 - (buildingIndex * 2) - shiftIndex - departmentIndex;
+  return { id: `${building}-${shift}-${department}`, building, shift, department, points: base, movement: (shiftIndex + buildingIndex) % 3 === 0 ? 2 : (departmentIndex ? -1 : 0), kpis: department === 'IB' ? ibKpis : obKpis };
+})));
+const pastWeeks = [
+  { week: 'Week 41', winner: 'ORD1 S4 IB', points: 91 },
+  { week: 'Week 40', winner: 'PHL5 S1 OB', points: 89 },
+  { week: 'Week 39', winner: 'DFW5 S2 OB', points: 87 },
+  { week: 'Week 38', winner: 'PHL5 S1 OB', points: 90 }
+];
+const streaks = [
+  { name: 'PHL5 S1 OB', count: 8 }, { name: 'ORD1 S4 IB', count: 6 },
+  { name: 'DFW5 S2 OB', count: 5 }, { name: 'SFM2 S1 IB', count: 4 }
+];
+
+const $ = (selector) => document.querySelector(selector);
+function ranked() { return [...competitors].sort((a, b) => b.points - a.points); }
+function renderPodium(rows) {
+  $('#podium').innerHTML = rows.slice(0, 3).map((item, index) => `<article class="podium"><div class="podium-rank">0${index + 1}</div><div class="podium-shift">${item.building} ${item.shift} ${item.department}</div><div class="podium-meta">${item.department === 'IB' ? 'Inbound' : 'Outbound'} division</div><div class="podium-score">${item.points}<small>points</small></div></article>`).join('');
+}
+function renderTable() {
+  const filter = $('#building-filter').value;
+  const rows = ranked().filter(item => filter === 'all' || item.building === filter);
+  $('#leaderboard-body').innerHTML = rows.map((item, index) => `<tr><td>${String(index + 1).padStart(2, '0')}</td><td class="shift-name">${item.building} ${item.shift} ${item.department}</td><td>${item.building}</td><td><span class="dept ${item.department.toLowerCase()}">${item.department === 'IB' ? 'Inbound' : 'Outbound'}</span></td><td class="score">${item.points}</td><td class="movement ${item.movement > 0 ? 'up' : item.movement < 0 ? 'down' : ''}">${item.movement > 0 ? '↑ +' + item.movement : item.movement < 0 ? '↓ ' + item.movement : '—'}</td><td><div class="progress" aria-label="${item.points} out of 50 points"><span style="width:${item.points * 2}%"></span></div></td></tr>`).join('');
+  if (filter === 'all') renderPodium(rows);
+}
+function renderHistory() {
+  $('#history-list').innerHTML = pastWeeks.map(item => `<div class="history-row"><strong>${item.week}</strong><span>${item.winner}</span><strong>${item.points} pts</strong></div>`).join('');
+  $('#streak-list').innerHTML = streaks.map((item, index) => `<div class="streak-row"><strong><span>${index + 1}</span> ${item.name}</strong><span class="streak-score">${item.count} <small>podiums</small></span></div>`).join('');
+}
+function populateBuildings() { buildings.forEach(building => $('#building-filter').insertAdjacentHTML('beforeend', `<option value="${building}">${building}</option>`)); }
+function shuffleScores() { competitors = competitors.map(item => ({ ...item, points: Math.max(1, Math.min(50, item.points + Math.floor(Math.random() * 7) - 3)), movement: Math.floor(Math.random() * 5) - 2 })); renderTable(); }
+$('#building-filter').addEventListener('change', renderTable);
+$('#shuffle-button').addEventListener('click', shuffleScores);
+populateBuildings(); renderTable(); renderHistory();
