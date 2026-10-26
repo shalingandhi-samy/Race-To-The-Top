@@ -42,7 +42,12 @@ const streaks = [
 const $ = (selector) => document.querySelector(selector);
 function ranked() { return [...competitors].sort((a, b) => b.points - a.points); }
 function renderPodium(rows) {
-  $('#podium').innerHTML = rows.slice(0, 3).map((item, index) => `<article class="podium"><div class="podium-rank">0${index + 1}</div><div class="podium-shift">${item.building} ${item.shift} ${item.department}</div><div class="podium-meta">${item.department === 'IB' ? 'Inbound' : 'Outbound'} division</div><div class="podium-score">${item.points}<small>points</small></div></article>`).join('');
+  const podiumOrder = [
+    { item: rows[1], rank: 2 },
+    { item: rows[0], rank: 1 },
+    { item: rows[2], rank: 3 }
+  ];
+  $('#podium').innerHTML = podiumOrder.map(({ item, rank }) => `<article class="podium"><div class="podium-rank">0${rank}</div><div class="podium-shift">${item.building} ${item.shift} ${item.department}</div><div class="podium-meta">${item.department === 'IB' ? 'Inbound' : 'Outbound'} division</div><div class="podium-score">${item.points}<small>points</small></div></article>`).join('');
 }
 function renderTable() {
   const filter = $('#building-filter').value;
