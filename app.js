@@ -43,11 +43,11 @@ const $ = (selector) => document.querySelector(selector);
 function ranked() { return [...competitors].sort((a, b) => b.points - a.points); }
 function renderPodium(rows) {
   const podiumOrder = [
-    { item: rows[1], rank: 2 },
-    { item: rows[0], rank: 1 },
-    { item: rows[2], rank: 3 }
+    { item: rows[1], rank: 2, label: 'RUNNER UP' },
+    { item: rows[0], rank: 1, label: 'CURRENT LEADER' },
+    { item: rows[2], rank: 3, label: 'THIRD PLACE' }
   ];
-  $('#podium').innerHTML = podiumOrder.map(({ item, rank }) => `<article class="podium"><div class="podium-rank">0${rank}</div><div class="podium-shift">${item.building} ${item.shift} ${item.department}</div><div class="podium-meta">${item.department === 'IB' ? 'Inbound' : 'Outbound'} division</div><div class="podium-score">${item.points}<small>points</small></div></article>`).join('');
+  $('#podium').innerHTML = podiumOrder.map(({ item, rank, label }) => `<article class="podium podium-place-${rank}"><div class="podium-watermark">0${rank}</div><div class="podium-medal"><span>0${rank}</span></div><div class="podium-label">${label}</div><div class="podium-shift">${item.building} ${item.shift} ${item.department}</div><div class="podium-meta">${item.department === 'IB' ? 'Inbound' : 'Outbound'} division</div><div class="podium-score"><strong>${item.points}</strong><small>POINTS</small></div><div class="podium-sheen"></div></article>`).join('');
 }
 function renderTable() {
   const filter = $('#building-filter').value;
