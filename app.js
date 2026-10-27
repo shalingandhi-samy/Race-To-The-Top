@@ -67,9 +67,56 @@ function renderTable() {
   $('#leaderboard-body').innerHTML = rows.map((item, index) => `<tr><td>${String(index + 1).padStart(2, '0')}</td><td class="shift-name">${item.building} ${item.shift} ${item.department}</td><td>${item.building}</td><td><span class="dept ${item.department.toLowerCase()}">${item.department === 'IB' ? 'Inbound' : 'Outbound'}</span></td><td class="score">${item.points}</td><td class="movement ${item.movement > 0 ? 'up' : item.movement < 0 ? 'down' : ''}">${item.movement > 0 ? '↑ +' + item.movement : item.movement < 0 ? '↓ ' + item.movement : '—'}</td><td><div class="progress" aria-label="${item.points} out of 50 points"><span style="width:${item.points * 2}%"></span></div></td></tr>`).join('');
   if (filter === 'all') renderPodium(rows);
 }
+function getSnapshots() { return JSON.parse(localStorage.getItem('race-snapshots') || '{}'); }
+function saveSnapshots(snapshots) { localStorage.setItem('race-snapshots', JSON.stringify(snapshots)); }
+function snapshotFor(week) { return getSnapshots()[String(week)] || null; }
+function applySnapshot(week) {
+  const snapshot = snapshotFor(week);
+  if (!snapshot) return;
+  const pointsByShift = new Map(snapshot.rows.map(row => [row.shift, row.points]));
+  competitors = competitors.map(item => ({ ...item, points: pointsByShift.get(`${item.building} ${item.shift} ${item.department}`) ?? 0, movement: 0 }));
+}
 function historicalRank(index, week) {
+  const snapshot = snapshotFor(week);
+  if (snapshot) {
+    const ordered = [...snapshot.rows].sort((a, b) => b.points - a.points || a.order - b.order);
+    return ordered.findIndex(row => row.shift === competitors[index].id.replaceAll('-', ' ')) + 1;
+  }
   return week === 39 ? index + 1 : null;
 }
+function renderSnapshotList() {
+  const snapshots = getSnapshots();
+  const weeks = Object.keys(snapshots).sort((a, b) => Number(a) - Number(b));
+  $('#snapshot-list').innerHTML = weeks.length ? weeks.map(week => `<span class="snapshot-chip">WW${week}<small>${snapshots[week].rows.length} shifts saved</small></span>`).join('') : '<span class="muted">No weekly snapshots published yet.</span>';
+}
+function setImportStatus(message, type = '') { const status = $('#import-status'); status.textContent = message; status.className = `import-status ${type}`; }
+let pendingImport = null;
+async function inspectImport(file) {
+  const week = Number($('#import-week').value);
+  if (!file || !week) return;
+  try {
+    const buffer = await file.arrayBuffer();
+    const workbook = XLSX.read(buffer, { type: 'array' });
+    const expectedSheet = `WW${week} Points`;
+    const sheetName = workbook.SheetNames.includes(expectedSheet) ? expectedSheet : workbook.SheetNames[0];
+    const rows = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { header: 1, defval: '' });
+    const imported = rows.slice(1).map((row, index) => ({ shift: String(row[4] || '').trim(), points: Number(row[18]), order: index + 1 })).filter(row => row.shift);
+    const expected = new Set(competitors.map(item => `${item.building} ${item.shift} ${item.department}`));
+    const seen = new Set(); const duplicates = []; const invalid = []; const unknown = [];
+    imported.forEach(row => { if (seen.has(row.shift)) duplicates.push(row.shift); seen.add(row.shift); if (!Number.isFinite(row.points) || row.points < 0 || row.points > 50) invalid.push(row.shift); if (!expected.has(row.shift)) unknown.push(row.shift); });
+    const missing = [...expected].filter(shift => !seen.has(shift));
+    pendingImport = { week, sheetName, rows: imported, valid: duplicates.length === 0 && invalid.length === 0 && unknown.length === 0 && missing.length === 0 };
+    $('#publish-points').disabled = !pendingImport.valid;
+    $('#import-preview').innerHTML = `<table><thead><tr><th>Shift</th><th>Points</th></tr></thead><tbody>${imported.slice(0, 12).map(row => `<tr><td>${row.shift}</td><td>${row.points}</td></tr>`).join('')}</tbody></table>${imported.length > 12 ? '<p class="muted">Showing first 12 rows.</p>' : ''}`;
+    const issues = [`${imported.length}/40 rows found`, sheetName === expectedSheet ? '' : `expected ${expectedSheet}, used ${sheetName}`, missing.length ? `${missing.length} missing` : '', duplicates.length ? `${duplicates.length} duplicate` : '', invalid.length ? `${invalid.length} invalid points` : '', unknown.length ? `${unknown.length} unknown shift` : ''].filter(Boolean);
+    setImportStatus(issues.join(' • ') + (pendingImport.valid ? ' • Ready to publish.' : ''), pendingImport.valid ? 'success' : 'error');
+  } catch (error) { pendingImport = null; $('#publish-points').disabled = true; setImportStatus(`Could not read workbook: ${error.message}`, 'error'); }
+}
+function publishImport() {
+  if (!pendingImport?.valid) return;
+  const snapshots = getSnapshots(); snapshots[String(pendingImport.week)] = { sheetName: pendingImport.sheetName, importedAt: new Date().toISOString(), rows: pendingImport.rows }; saveSnapshots(snapshots); applySnapshot(pendingImport.week); renderTable(); renderHistoryMatrix(); renderSnapshotList(); setImportStatus(`WW${pendingImport.week} published successfully.`, 'success');
+}
+
 function renderHistoryMatrix() {
   const weeks = Array.from({ length: 15 }, (_, index) => 38 + index);
   const filter = $('#history-building-filter').value;
@@ -146,7 +193,10 @@ function toggleTheme() {
 }
 $('#building-filter').addEventListener('change', renderTable);
 $('#history-building-filter').addEventListener('change', renderHistoryMatrix);
+$('#points-file').addEventListener('change', event => inspectImport(event.target.files[0]));
+$('#import-week').addEventListener('change', () => inspectImport($('#points-file').files[0]));
+$('#publish-points').addEventListener('click', publishImport);
 $('#theme-toggle').addEventListener('click', toggleTheme);
 initializeNavigation();
 showView('home');
-populateBuildings(); initializeTheme(); renderCalendar(); renderTable(); renderHistory();
+populateBuildings(); initializeTheme(); applySnapshot(39); renderCalendar(); renderTable(); renderHistory(); renderSnapshotList();
