@@ -9,6 +9,12 @@ const ibKpiPointRanges = {
   ULEARNS: { min: 1, max: 5 }, 'AXONIFY %': { min: 1, max: 5 }
 };
 const obKpis = ['PICK UPH', 'BF UPH', 'BAGGING UPH', 'LOADING UPH', 'OB UPH', 'OTD', 'ULEARNS', 'AXONIFY %'];
+const obKpiPointRanges = {
+  'PICK UPH': { min: 1, max: 5 }, 'BF UPH': { min: 1, max: 5 },
+  'BAGGING UPH': { min: 1, max: 5 }, 'LOADING UPH': { min: 1, max: 5 },
+  'OB UPH': { min: 1, max: 10 }, OTD: { min: 1, max: 10 },
+  ULEARNS: { min: 1, max: 5 }, 'AXONIFY %': { min: 1, max: 5 }
+};
 const names = ['PHL5 S1 OB', 'ORD1 S4 IB', 'DFW5 S2 OB', 'SFM2 S1 IB', 'IND3 S5 OB', 'PHL5 S4 IB', 'ORD1 S2 OB', 'DFW5 S5 IB'];
 
 function getWalmartWeek(date = new Date()) {
