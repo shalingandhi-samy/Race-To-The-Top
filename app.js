@@ -1,4 +1,4 @@
-const buildings = ['PHL5', 'ORD1', 'DFW5', 'SFM2', 'IND3'];
+const buildings = ['PHL5', 'ORD1', 'DFW5', 'SMF2', 'IND3'];
 const shifts = ['S1', 'S2', 'S4', 'S5'];
 const departments = ['IB', 'OB'];
 const ibKpis = ['DECANT UPH', 'UNLOADING UPH', 'REMEDY UPH', 'PROBLEM SOLVE UPH', 'IB UPH', 'OTD', 'ULEARNS', 'AXONIFY %'];
@@ -37,8 +37,8 @@ function currentWeekLabel() {
 }
 
 let competitors = buildings.flatMap((building, buildingIndex) => shifts.flatMap((shift, shiftIndex) => departments.map((department, departmentIndex) => {
-  const base = 48 - (buildingIndex * 2) - shiftIndex - departmentIndex;
-  return { id: `${building}-${shift}-${department}`, building, shift, department, points: base, movement: (shiftIndex + buildingIndex) % 3 === 0 ? 2 : (departmentIndex ? -1 : 0), kpis: department === 'IB' ? ibKpis : obKpis };
+  const base = 0;
+  return { id: `${building}-${shift}-${department}`, building, shift, department, points: base, movement: 0, kpis: department === 'IB' ? ibKpis : obKpis };
 })));
 const pastWeeks = [
   { week: 'Week 41', winner: 'ORD1 S4 IB', points: 46 },
@@ -83,7 +83,6 @@ function renderCalendar() {
   $('#week-label').title = `${formatDate(week.weekStart)} – ${formatDate(week.weekEnd)} • Saturday–Friday`;
 }
 function populateBuildings() { buildings.forEach(building => $('#building-filter').insertAdjacentHTML('beforeend', `<option value="${building}">${building}</option>`)); }
-function shuffleScores() { competitors = competitors.map(item => ({ ...item, points: Math.max(1, Math.min(50, item.points + Math.floor(Math.random() * 7) - 3)), movement: Math.floor(Math.random() * 5) - 2 })); renderTable(); }
 function showView(view) {
   document.body.dataset.view = view;
   document.querySelectorAll('.nav-link').forEach(link => {
@@ -125,7 +124,6 @@ function toggleTheme() {
   applyTheme(next);
 }
 $('#building-filter').addEventListener('change', renderTable);
-$('#shuffle-button').addEventListener('click', shuffleScores);
 $('#theme-toggle').addEventListener('click', toggleTheme);
 initializeNavigation();
 showView('home');
