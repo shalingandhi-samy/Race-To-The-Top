@@ -140,7 +140,8 @@ function renderHistoryMatrix() {
 function renderHistory() {
   renderHistoryMatrix();
   $('#streak-list').innerHTML = streaks.slice(0, 5).map((item, index) => {
-    const medals = ['gold', 'silver', 'bronze'].flatMap(type => Array.from({ length: item.medals[type] }, () => `<span class="medal medal-${type}" title="${type} medal" aria-label="${type} medal">●</span>`)).join('');
+    const medalEmoji = { gold: '&#129351;', silver: '&#129352;', bronze: '&#129353;' };
+    const medals = ['gold', 'silver', 'bronze'].flatMap(type => Array.from({ length: item.medals[type] }, () => `<span class="medal medal-${type}" title="${type} medal" aria-label="${type} medal">${medalEmoji[type]}</span>`)).join('');
     return `<div class="streak-row streak-place-${index + 1}"><div class="streak-shift"><span class="streak-rank">${index + 1}</span><strong>${item.name}</strong></div><span class="streak-count">${item.count}<small>podiums</small></span><span class="medal-collection">${medals}</span></div>`;
   }).join('');
 }
