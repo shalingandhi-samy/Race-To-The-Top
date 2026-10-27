@@ -67,12 +67,28 @@ function renderTable() {
   $('#leaderboard-body').innerHTML = rows.map((item, index) => `<tr><td>${String(index + 1).padStart(2, '0')}</td><td class="shift-name">${item.building} ${item.shift} ${item.department}</td><td>${item.building}</td><td><span class="dept ${item.department.toLowerCase()}">${item.department === 'IB' ? 'Inbound' : 'Outbound'}</span></td><td class="score">${item.points}</td><td class="movement ${item.movement > 0 ? 'up' : item.movement < 0 ? 'down' : ''}">${item.movement > 0 ? '↑ +' + item.movement : item.movement < 0 ? '↓ ' + item.movement : '—'}</td><td><div class="progress" aria-label="${item.points} out of 50 points"><span style="width:${item.points * 2}%"></span></div></td></tr>`).join('');
   if (filter === 'all') renderPodium(rows);
 }
-function renderHistory() {
-  const current = getWalmartWeek();
-  $('#history-list').innerHTML = pastWeeks.map((item, index) => {
-    const weekNumber = Math.max(1, current.weekNumber - index - 1);
-    return `<div class="history-row"><strong>Walmart Week ${weekNumber}</strong><span>${item.winner}</span><strong>${item.points} pts</strong></div>`;
+function historicalRank(index, week) {
+  return week === 39 ? index + 1 : null;
+}
+function renderHistoryMatrix() {
+  const weeks = Array.from({ length: 15 }, (_, index) => 38 + index);
+  const filter = $('#history-building-filter').value;
+  const rows = competitors.filter(item => filter === 'all' || item.building === filter);
+  $('#history-matrix-head').innerHTML = `<tr><th>Order</th><th>Shift</th>${weeks.map(week => `<th class="${week === 39 ? 'current-week' : ''}">WW${week}</th>`).join('')}</tr>`;
+  $('#history-matrix-body').innerHTML = rows.map(item => {
+    const index = competitors.indexOf(item);
+    const cells = weeks.map((week, weekIndex) => {
+      const rank = historicalRank(index, week);
+      const previousRank = weekIndex === 0 ? rank : historicalRank(index, weeks[weekIndex - 1]);
+      const movement = rank === null || previousRank === null ? '<span class="muted">—</span>' : rank < previousRank ? '<span class="movement-up">↑</span>' : rank > previousRank ? '<span class="movement-down">↓</span>' : '<span class="muted">—</span>';
+      const rankClass = rank !== null && rank <= 3 ? `rank-${rank}` : '';
+      return `<td class="${week === 39 ? 'current-week' : ''}"><span class="rank-cell ${rankClass}">${rank === null ? '—' : String(rank).padStart(2, '0')}</span> ${movement}</td>`;
+    }).join('');
+    return `<tr><td>${String(index + 1).padStart(2, '0')}</td><td>${item.building} ${item.shift} ${item.department}</td>${cells}</tr>`;
   }).join('');
+}
+function renderHistory() {
+  renderHistoryMatrix();
   $('#streak-list').innerHTML = streaks.map((item, index) => `<div class="streak-row"><strong><span>${index + 1}</span> ${item.name}</strong><span class="streak-score">${item.count} <small>podiums</small></span></div>`).join('');
 }
 function renderCalendar() {
@@ -82,7 +98,12 @@ function renderCalendar() {
   $('#hero-week').textContent = label;
   $('#week-label').title = `${formatDate(week.weekStart)} – ${formatDate(week.weekEnd)} • Saturday–Friday`;
 }
-function populateBuildings() { buildings.forEach(building => $('#building-filter').insertAdjacentHTML('beforeend', `<option value="${building}">${building}</option>`)); }
+function populateBuildings() {
+  buildings.forEach(building => {
+    $('#building-filter').insertAdjacentHTML('beforeend', `<option value="${building}">${building}</option>`);
+    $('#history-building-filter').insertAdjacentHTML('beforeend', `<option value="${building}">${building}</option>`);
+  });
+}
 function showView(view) {
   document.body.dataset.view = view;
   document.querySelectorAll('.nav-link').forEach(link => {
@@ -124,6 +145,7 @@ function toggleTheme() {
   applyTheme(next);
 }
 $('#building-filter').addEventListener('change', renderTable);
+$('#history-building-filter').addEventListener('change', renderHistoryMatrix);
 $('#theme-toggle').addEventListener('click', toggleTheme);
 initializeNavigation();
 showView('home');
