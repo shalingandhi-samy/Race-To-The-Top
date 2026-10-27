@@ -2,6 +2,12 @@ const buildings = ['PHL5', 'ORD1', 'DFW5', 'SFM2', 'IND3'];
 const shifts = ['S1', 'S2', 'S4', 'S5'];
 const departments = ['IB', 'OB'];
 const ibKpis = ['DECANT UPH', 'UNLOADING UPH', 'REMEDY UPH', 'PROBLEM SOLVE UPH', 'IB UPH', 'OTD', 'ULEARNS', 'AXONIFY %'];
+const ibKpiPointRanges = {
+  'DECANT UPH': { min: 1, max: 5 }, 'UNLOADING UPH': { min: 1, max: 5 },
+  'REMEDY UPH': { min: 1, max: 5 }, 'PROBLEM SOLVE UPH': { min: 1, max: 5 },
+  'IB UPH': { min: 1, max: 10 }, OTD: { min: 1, max: 10 },
+  ULEARNS: { min: 1, max: 5 }, 'AXONIFY %': { min: 1, max: 5 }
+};
 const obKpis = ['PICK UPH', 'BF UPH', 'BAGGING UPH', 'LOADING UPH', 'OB UPH', 'OTD', 'ULEARNS', 'AXONIFY %'];
 const names = ['PHL5 S1 OB', 'ORD1 S4 IB', 'DFW5 S2 OB', 'SFM2 S1 IB', 'IND3 S5 OB', 'PHL5 S4 IB', 'ORD1 S2 OB', 'DFW5 S5 IB'];
 
