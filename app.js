@@ -141,7 +141,7 @@ function renderHistory() {
   renderHistoryMatrix();
   $('#streak-list').innerHTML = streaks.slice(0, 5).map((item, index) => {
     const medals = ['gold', 'silver', 'bronze'].flatMap(type => Array.from({ length: item.medals[type] }, () => `<span class="medal medal-${type}" title="${type} medal" aria-label="${type} medal">●</span>`)).join('');
-    return `<div class="streak-row streak-place-${index + 1}"><div class="streak-shift"><span class="streak-rank">${index + 1}</span><strong>${item.name}</strong></div><div class="streak-result"><span class="streak-count">${item.count}<small>podiums</small></span><span class="medal-collection">${medals}</span></div></div>`;
+    return `<div class="streak-row streak-place-${index + 1}"><div class="streak-shift"><span class="streak-rank">${index + 1}</span><strong>${item.name}</strong></div><div class="streak-result"><span class="medal-collection">${medals}</span><span class="streak-count">${item.count}<small>podiums</small></span></div></div>`;
   }).join('');
   $('#gold-list').innerHTML = [...streaks].sort((a, b) => b.medals.gold - a.medals.gold || b.count - a.count).map((item, index) => `<div class="gold-row"><span class="gold-rank">${index + 1}</span><strong>${item.name}</strong><span class="gold-count">${item.medals.gold}<small>gold</small></span><span class="medal medal-gold">●</span></div>`).join('');
 }
