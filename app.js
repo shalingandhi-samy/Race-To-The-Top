@@ -47,9 +47,9 @@ const pastWeeks = [
   { week: 'Week 38', winner: 'PHL5 S1 OB', points: 45 }
 ];
 const streaks = [
-  { name: 'PHL5 S1 OB', count: 8, gold: 4 }, { name: 'ORD1 S4 IB', count: 6, gold: 2 },
-  { name: 'DFW5 S2 OB', count: 5, gold: 2 }, { name: 'SMF2 S1 IB', count: 4, gold: 1 },
-  { name: 'IND3 S5 OB', count: 3, gold: 1 }
+  { name: 'PHL5 S1 OB', count: 8 }, { name: 'ORD1 S4 IB', count: 6 },
+  { name: 'DFW5 S2 OB', count: 5 }, { name: 'SMF2 S1 IB', count: 4 },
+  { name: 'IND3 S5 OB', count: 3 }
 ];
 
 const $ = (selector) => document.querySelector(selector);
@@ -137,7 +137,7 @@ function renderHistoryMatrix() {
 }
 function renderHistory() {
   renderHistoryMatrix();
-  $('#gold-leader-list').innerHTML = [...streaks].sort((a, b) => b.gold - a.gold || b.count - a.count).map((item, index) => `<div class="gold-leader-row"><span class="gold-leader-rank">${index + 1}</span><strong>${item.name}</strong><span class="gold-leader-count">${item.gold}<small>gold medals</small></span><span class="gold-dot">●</span></div>`).join('');
+  $('#streak-list').innerHTML = streaks.slice(0, 5).map((item, index) => `<div class="streak-row streak-place-${index + 1}"><div class="streak-shift"><span class="streak-rank">${index + 1}</span><strong>${item.name}</strong></div><div class="streak-result"><span class="streak-count">${item.count}<small>podiums</small></span><span class="medal medal-${index + 1}" aria-label="${index === 0 ? 'Gold' : index === 1 ? 'Silver' : index === 2 ? 'Bronze' : 'Top five'} medal">${index < 3 ? '●' : '◆'}</span></div></div>`).join('');
 }
 function renderCalendar() {
   const week = getWalmartWeek();
