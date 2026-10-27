@@ -48,7 +48,8 @@ const pastWeeks = [
 ];
 const streaks = [
   { name: 'PHL5 S1 OB', count: 8 }, { name: 'ORD1 S4 IB', count: 6 },
-  { name: 'DFW5 S2 OB', count: 5 }, { name: 'SFM2 S1 IB', count: 4 }
+  { name: 'DFW5 S2 OB', count: 5 }, { name: 'SMF2 S1 IB', count: 4 },
+  { name: 'IND3 S5 OB', count: 3 }
 ];
 
 const $ = (selector) => document.querySelector(selector);
@@ -136,7 +137,7 @@ function renderHistoryMatrix() {
 }
 function renderHistory() {
   renderHistoryMatrix();
-  $('#streak-list').innerHTML = streaks.map((item, index) => `<div class="streak-row"><strong><span>${index + 1}</span> ${item.name}</strong><span class="streak-score">${item.count} <small>podiums</small></span></div>`).join('');
+  $('#streak-list').innerHTML = streaks.slice(0, 5).map((item, index) => `<div class="streak-row streak-place-${index + 1}"><div class="streak-shift"><span class="streak-rank">${index + 1}</span><strong>${item.name}</strong></div><div class="streak-result"><span class="streak-count">${item.count}<small>podiums</small></span><span class="medal medal-${index + 1}" aria-label="${index === 0 ? 'Gold' : index === 1 ? 'Silver' : index === 2 ? 'Bronze' : 'Top five'} medal">${index < 3 ? '●' : '◆'}</span></div></div>`).join('');
 }
 function renderCalendar() {
   const week = getWalmartWeek();
