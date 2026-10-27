@@ -47,9 +47,11 @@ const pastWeeks = [
   { week: 'Week 38', winner: 'PHL5 S1 OB', points: 45 }
 ];
 const streaks = [
-  { name: 'PHL5 S1 OB', count: 8 }, { name: 'ORD1 S4 IB', count: 6 },
-  { name: 'DFW5 S2 OB', count: 5 }, { name: 'SMF2 S1 IB', count: 4 },
-  { name: 'IND3 S5 OB', count: 3 }
+  { name: 'PHL5 S1 OB', count: 8, medals: { gold: 4, silver: 2, bronze: 2 } },
+  { name: 'ORD1 S4 IB', count: 6, medals: { gold: 2, silver: 3, bronze: 1 } },
+  { name: 'DFW5 S2 OB', count: 5, medals: { gold: 2, silver: 1, bronze: 2 } },
+  { name: 'SMF2 S1 IB', count: 4, medals: { gold: 1, silver: 1, bronze: 2 } },
+  { name: 'IND3 S5 OB', count: 3, medals: { gold: 1, silver: 1, bronze: 1 } }
 ];
 
 const $ = (selector) => document.querySelector(selector);
@@ -137,7 +139,10 @@ function renderHistoryMatrix() {
 }
 function renderHistory() {
   renderHistoryMatrix();
-  $('#streak-list').innerHTML = streaks.slice(0, 5).map((item, index) => `<div class="streak-row streak-place-${index + 1}"><div class="streak-shift"><span class="streak-rank">${index + 1}</span><strong>${item.name}</strong></div><div class="streak-result"><span class="streak-count">${item.count}<small>podiums</small></span><span class="medal medal-${index + 1}" aria-label="${index === 0 ? 'Gold' : index === 1 ? 'Silver' : index === 2 ? 'Bronze' : 'Top five'} medal">${index < 3 ? '●' : '◆'}</span></div></div>`).join('');
+  $('#streak-list').innerHTML = streaks.slice(0, 5).map((item, index) => {
+    const medals = ['gold', 'silver', 'bronze'].flatMap(type => Array.from({ length: item.medals[type] }, () => `<span class="medal medal-${type}" title="${type} medal" aria-label="${type} medal">●</span>`)).join('');
+    return `<div class="streak-row streak-place-${index + 1}"><div class="streak-shift"><span class="streak-rank">${index + 1}</span><strong>${item.name}</strong></div><div class="streak-result"><span class="streak-count">${item.count}<small>podiums</small></span><span class="medal-collection">${medals}</span></div></div>`;
+  }).join('');
 }
 function renderCalendar() {
   const week = getWalmartWeek();
