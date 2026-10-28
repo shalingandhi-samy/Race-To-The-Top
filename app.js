@@ -115,9 +115,17 @@ async function inspectImport(file) {
     setImportStatus(issues.join(' • ') + (pendingImport.valid ? ' • Ready to publish.' : ''), pendingImport.valid ? 'success' : 'error');
   } catch (error) { pendingImport = null; $('#publish-points').disabled = true; setImportStatus(`Could not read workbook: ${error.message}`, 'error'); }
 }
-function publishImport() {
+async function publishImport() {
   if (!pendingImport?.valid) return;
-  const snapshots = getSnapshots(); snapshots[String(pendingImport.week)] = { sheetName: pendingImport.sheetName, importedAt: new Date().toISOString(), rows: pendingImport.rows }; saveSnapshots(snapshots); applySnapshot(pendingImport.week); renderTable(); renderHistoryMatrix(); renderSnapshotList(); setImportStatus(`WW${pendingImport.week} published successfully.`, 'success');
+  const payload = { sheet_name: pendingImport.sheetName, rows: pendingImport.rows };
+  try {
+    const response = await fetch(`/api/weeks/${pendingImport.week}/snapshots`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+    if (!response.ok) throw new Error((await response.json()).detail || 'Server rejected the snapshot.');
+    const snapshots = getSnapshots(); snapshots[String(pendingImport.week)] = { ...payload, importedAt: new Date().toISOString() }; saveSnapshots(snapshots);
+    applySnapshot(pendingImport.week); renderTable(); renderHistoryMatrix(); renderSnapshotList(); setImportStatus(`WW${pendingImport.week} published to the shared server.`, 'success');
+  } catch (error) {
+    setImportStatus(`Could not publish to the shared server: ${error.message}`, 'error');
+  }
 }
 
 function renderHistoryMatrix() {
