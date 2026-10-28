@@ -123,7 +123,7 @@ def podium_streaks() -> list[dict[str, Any]]:
     with closing(connect()) as connection:
         weeks = connection.execute("SELECT week, rows_json FROM weekly_snapshots").fetchall()
     for week in weeks:
-        ranked = sorted(json.loads(week["rows"]), key=lambda row: (-row["points"], row["order"]))
+        ranked = sorted(json.loads(week["rows_json"]), key=lambda row: (-row["points"], row["order"]))
         for index, row in enumerate(ranked[:3]):
             result = counts.setdefault(row["shift"], {"gold": 0, "silver": 0, "bronze": 0})
             result["gold" if index == 0 else "silver" if index == 1 else "bronze"] += 1
