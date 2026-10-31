@@ -47,6 +47,11 @@ def initialize_database() -> None:
             imported_at TEXT NOT NULL,
             rows_json TEXT NOT NULL
         )""")
+        if connection.execute("SELECT COUNT(*) FROM weekly_snapshots").fetchone()[0] == 0:
+            seed = ROOT / "data" / "ww39_snapshot.json"
+            if seed.exists():
+                snapshot = json.loads(seed.read_text(encoding="utf-8"))
+                connection.execute("INSERT INTO weekly_snapshots (week, sheet_name, imported_at, rows_json) VALUES (?, ?, ?, ?)", (snapshot["week"], snapshot["sheet_name"], snapshot["imported_at"], json.dumps(snapshot["rows"])))
         connection.commit()
 
 

@@ -1,0 +1,207 @@
+{
+  "week": 39,
+  "sheet_name": "WW39 Points",
+  "imported_at": "2026-10-28 23:17:07",
+  "rows": [
+    {
+      "shift": "PHL5 S1 IB",
+      "points": 0,
+      "order": 1
+    },
+    {
+      "shift": "PHL5 S1 OB",
+      "points": 0,
+      "order": 2
+    },
+    {
+      "shift": "PHL5 S2 IB",
+      "points": 0,
+      "order": 3
+    },
+    {
+      "shift": "PHL5 S2 OB",
+      "points": 0,
+      "order": 4
+    },
+    {
+      "shift": "PHL5 S4 IB",
+      "points": 0,
+      "order": 5
+    },
+    {
+      "shift": "PHL5 S4 OB",
+      "points": 0,
+      "order": 6
+    },
+    {
+      "shift": "PHL5 S5 IB",
+      "points": 0,
+      "order": 7
+    },
+    {
+      "shift": "PHL5 S5 OB",
+      "points": 0,
+      "order": 8
+    },
+    {
+      "shift": "IND3 S1 IB",
+      "points": 0,
+      "order": 9
+    },
+    {
+      "shift": "IND3 S1 OB",
+      "points": 0,
+      "order": 10
+    },
+    {
+      "shift": "IND3 S2 IB",
+      "points": 0,
+      "order": 11
+    },
+    {
+      "shift": "IND3 S2 OB",
+      "points": 0,
+      "order": 12
+    },
+    {
+      "shift": "IND3 S4 IB",
+      "points": 0,
+      "order": 13
+    },
+    {
+      "shift": "IND3 S4 OB",
+      "points": 0,
+      "order": 14
+    },
+    {
+      "shift": "IND3 S5 IB",
+      "points": 0,
+      "order": 15
+    },
+    {
+      "shift": "IND3 S5 OB",
+      "points": 0,
+      "order": 16
+    },
+    {
+      "shift": "SMF2 S1 IB",
+      "points": 0,
+      "order": 17
+    },
+    {
+      "shift": "SMF2 S1 OB",
+      "points": 0,
+      "order": 18
+    },
+    {
+      "shift": "SMF2 S2 IB",
+      "points": 0,
+      "order": 19
+    },
+    {
+      "shift": "SMF2 S2 OB",
+      "points": 0,
+      "order": 20
+    },
+    {
+      "shift": "SMF2 S4 IB",
+      "points": 0,
+      "order": 21
+    },
+    {
+      "shift": "SMF2 S4 OB",
+      "points": 0,
+      "order": 22
+    },
+    {
+      "shift": "SMF2 S5 IB",
+      "points": 0,
+      "order": 23
+    },
+    {
+      "shift": "SMF2 S5 OB",
+      "points": 0,
+      "order": 24
+    },
+    {
+      "shift": "DFW5 S1 IB",
+      "points": 0,
+      "order": 25
+    },
+    {
+      "shift": "DFW5 S1 OB",
+      "points": 0,
+      "order": 26
+    },
+    {
+      "shift": "DFW5 S2 IB",
+      "points": 0,
+      "order": 27
+    },
+    {
+      "shift": "DFW5 S2 OB",
+      "points": 0,
+      "order": 28
+    },
+    {
+      "shift": "DFW5 S4 IB",
+      "points": 0,
+      "order": 29
+    },
+    {
+      "shift": "DFW5 S4 OB",
+      "points": 0,
+      "order": 30
+    },
+    {
+      "shift": "DFW5 S5 IB",
+      "points": 0,
+      "order": 31
+    },
+    {
+      "shift": "DFW5 S5 OB",
+      "points": 0,
+      "order": 32
+    },
+    {
+      "shift": "ORD1 S1 IB",
+      "points": 0,
+      "order": 33
+    },
+    {
+      "shift": "ORD1 S1 OB",
+      "points": 0,
+      "order": 34
+    },
+    {
+      "shift": "ORD1 S2 IB",
+      "points": 0,
+      "order": 35
+    },
+    {
+      "shift": "ORD1 S2 OB",
+      "points": 0,
+      "order": 36
+    },
+    {
+      "shift": "ORD1 S4 IB",
+      "points": 0,
+      "order": 37
+    },
+    {
+      "shift": "ORD1 S4 OB",
+      "points": 0,
+      "order": 38
+    },
+    {
+      "shift": "ORD1 S5 IB",
+      "points": 0,
+      "order": 39
+    },
+    {
+      "shift": "ORD1 S5 OB",
+      "points": 0,
+      "order": 40
+    }
+  ]
+}
