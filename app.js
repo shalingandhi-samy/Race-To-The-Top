@@ -46,7 +46,7 @@ const pastWeeks = [
   { week: 'Week 39', winner: 'DFW5 S2 OB', points: 43 },
   { week: 'Week 38', winner: 'PHL5 S1 OB', points: 45 }
 ];
-let streaks = [];
+let podiumHistory = [];
 
 const $ = (selector) => document.querySelector(selector);
 function ranked() { return [...competitors].sort((a, b) => b.points - a.points); }
@@ -141,17 +141,14 @@ function renderHistoryMatrix() {
   }).join('');
 }
 function renderStreaks() {
-  const medalEmoji = { gold: '&#129351;', silver: '&#129352;', bronze: '&#129353;' };
-  $('#streak-list').innerHTML = streaks.length ? streaks.slice(0, 5).map((item, index) => {
-    const medals = ['gold', 'silver', 'bronze'].flatMap(type => Array.from({ length: item[type] || 0 }, () => `<span class="medal medal-${type}" title="${type} medal" aria-label="${type} medal">${medalEmoji[type]}</span>`)).join('');
-    return `<div class="streak-row streak-place-${index + 1}"><div class="streak-shift"><span class="streak-rank">${index + 1}</span><strong>${item.shift}</strong></div><span class="streak-count">${item.podiums}<small>podiums</small></span><span class="medal-collection">${medals}</span></div>`;
-  }).join('') : '<p class="muted">No podium history published yet.</p>';
+  const medalEmoji = { 1: '&#129351;', 2: '&#129352;', 3: '&#129353;' };
+  $('#streak-list').innerHTML = podiumHistory.length ? podiumHistory.map(({ week, podium }) => `<div class="weekly-podium"><strong class="weekly-podium-week">WW${week}</strong>${podium.map(item => `<div class="streak-row streak-place-${item.rank}"><div class="streak-shift"><span class="streak-rank">${item.rank}</span><strong>${item.shift}</strong></div><span class="streak-count">${item.points}<small>points</small></span><span class="medal-collection"><span class="medal medal-${['', 'gold', 'silver', 'bronze'][item.rank]}" title="${['', 'Gold', 'Silver', 'Bronze'][item.rank]} medal" aria-label="${['', 'Gold', 'Silver', 'Bronze'][item.rank]} medal">${medalEmoji[item.rank]}</span></span></div>`).join('')}</div>`).join('') : '<p class="muted">No podium history published yet.</p>';
 }
 async function loadLivePodiumHistory() {
   try {
-    const response = await fetch('/api/podium-streaks');
+    const response = await fetch('/api/podium-history');
     if (!response.ok) throw new Error('Podium history unavailable');
-    streaks = await response.json();
+    podiumHistory = await response.json();
     renderStreaks();
   } catch (error) {
     console.warn('Could not load live podium history:', error);

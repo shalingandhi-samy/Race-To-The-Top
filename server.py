@@ -122,6 +122,17 @@ def get_week(week: int) -> dict[str, Any]:
     return {"week": week, "rows": [{**row, "rank": index + 1} for index, row in enumerate(ranked)]}
 
 
+@app.get("/api/podium-history")
+def podium_history() -> list[dict[str, Any]]:
+    with closing(connect()) as connection:
+        weeks = connection.execute("SELECT week, rows_json FROM weekly_snapshots ORDER BY week").fetchall()
+    history = []
+    for week in weeks:
+        ranked = sorted(json.loads(week["rows_json"]), key=lambda row: (-row["points"], row["order"]))
+        history.append({"week": week["week"], "podium": [{**row, "rank": index + 1} for index, row in enumerate(ranked[:3])]})
+    return history
+
+
 @app.get("/api/podium-streaks")
 def podium_streaks() -> list[dict[str, Any]]:
     counts: dict[str, dict[str, int]] = {}
