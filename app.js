@@ -147,7 +147,7 @@ function renderStreaks() {
     return `<div class="streak-row streak-place-${index + 1}"><div class="streak-shift"><span class="streak-rank">${index + 1}</span><strong>${item.shift}</strong></div><span class="streak-count">${item.podiums}<small>podiums</small></span><span class="medal-collection">${medals}</span></div>`;
   }).join('') : '<p class="muted">No podium history published yet.</p>';
 }
-
+async function loadLivePodiumHistory() {
   try {
     const response = await fetch('/api/podium-streaks');
     if (!response.ok) throw new Error('Podium history unavailable');
