@@ -46,13 +46,7 @@ const pastWeeks = [
   { week: 'Week 39', winner: 'DFW5 S2 OB', points: 43 },
   { week: 'Week 38', winner: 'PHL5 S1 OB', points: 45 }
 ];
-const streaks = [
-  { name: 'PHL5 S1 OB', count: 3, medals: { gold: 1, silver: 1, bronze: 1 } },
-  { name: 'ORD1 S4 IB', count: 2, medals: { gold: 1, silver: 1, bronze: 0 } },
-  { name: 'DFW5 S2 OB', count: 2, medals: { gold: 0, silver: 1, bronze: 1 } },
-  { name: 'SMF2 S1 IB', count: 1, medals: { gold: 0, silver: 0, bronze: 1 } },
-  { name: 'IND3 S5 OB', count: 1, medals: { gold: 1, silver: 0, bronze: 0 } }
-];
+let streaks = [];
 
 const $ = (selector) => document.querySelector(selector);
 function ranked() { return [...competitors].sort((a, b) => b.points - a.points); }
@@ -122,7 +116,7 @@ async function publishImport() {
     const response = await fetch(`/api/weeks/${pendingImport.week}/snapshots`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
     if (!response.ok) throw new Error((await response.json()).detail || 'Server rejected the snapshot.');
     const snapshots = getSnapshots(); snapshots[String(pendingImport.week)] = { ...payload, importedAt: new Date().toISOString() }; saveSnapshots(snapshots);
-    applySnapshot(pendingImport.week); renderTable(); renderHistoryMatrix(); renderSnapshotList(); setImportStatus(`WW${pendingImport.week} published to the shared server.`, 'success');
+    applySnapshot(pendingImport.week); renderTable(); renderHistoryMatrix(); renderSnapshotList(); loadLivePodiumHistory(); setImportStatus(`WW${pendingImport.week} published to the shared server.`, 'success');
   } catch (error) {
     setImportStatus(`Could not publish to the shared server: ${error.message}`, 'error');
   }
@@ -140,18 +134,55 @@ function renderHistoryMatrix() {
       const previousRank = weekIndex === 0 ? rank : historicalRank(index, weeks[weekIndex - 1]);
       const movement = rank === null || previousRank === null ? '<span class="muted">—</span>' : rank < previousRank ? '<span class="movement-up">↑</span>' : rank > previousRank ? '<span class="movement-down">↓</span>' : '<span class="muted">—</span>';
       const rankClass = rank !== null && rank <= 3 ? `rank-${rank}` : '';
-      return `<td class="${week === 39 ? 'current-week' : ''}"><span class="rank-cell ${rankClass}">${rank === null ? '—' : String(rank).padStart(2, '0')}</span> ${movement}</td>`;
+      const medal = rank === 1 ? '<span class="history-medal" title="Gold medal" aria-label="Gold medal">&#129351;</span>' : rank === 2 ? '<span class="history-medal" title="Silver medal" aria-label="Silver medal">&#129352;</span>' : rank === 3 ? '<span class="history-medal" title="Bronze medal" aria-label="Bronze medal">&#129353;</span>' : '';
+      return `<td class="${week === 39 ? 'current-week' : ''}"><span class="rank-cell ${rankClass}">${rank === null ? '—' : String(rank).padStart(2, '0')}</span>${medal} ${movement}</td>`;
     }).join('');
     return `<tr><td>${String(index + 1).padStart(2, '0')}</td><td>${item.building} ${item.shift} ${item.department}</td>${cells}</tr>`;
   }).join('');
 }
-function renderHistory() {
-  renderHistoryMatrix();
-  $('#streak-list').innerHTML = streaks.slice(0, 5).map((item, index) => {
-    const medalEmoji = { gold: '&#129351;', silver: '&#129352;', bronze: '&#129353;' };
-    const medals = ['gold', 'silver', 'bronze'].flatMap(type => Array.from({ length: item.medals[type] }, () => `<span class="medal medal-${type}" title="${type} medal" aria-label="${type} medal">${medalEmoji[type]}</span>`)).join('');
-    return `<div class="streak-row streak-place-${index + 1}"><div class="streak-shift"><span class="streak-rank">${index + 1}</span><strong>${item.name}</strong></div><span class="streak-count">${item.count}<small>podiums</small></span><span class="medal-collection">${medals}</span></div>`;
-  }).join('');
+function renderStreaks() {
+  const medalEmoji = { gold: '&#129351;', silver: '&#129352;', bronze: '&#129353;' };
+  $('#streak-list').innerHTML = streaks.length ? streaks.slice(0, 5).map((item, index) => {
+    const medals = ['gold', 'silver', 'bronze'].flatMap(type => Array.from({ length: item[type] || 0 }, () => `<span class="medal medal-${type}" title="${type} medal" aria-label="${type} medal">${medalEmoji[type]}</span>`)).join('');
+    return `<div class="streak-row streak-place-${index + 1}"><div class="streak-shift"><span class="streak-rank">${index + 1}</span><strong>${item.shift}</strong></div><span class="streak-count">${item.podiums}<small>podiums</small></span><span class="medal-collection">${medals}</span></div>`;
+  }).join('') : '<p class="muted">No podium history published yet.</p>';
+}
+
+  try {
+    const response = await fetch('/api/podium-streaks');
+    if (!response.ok) throw new Error('Podium history unavailable');
+    streaks = await response.json();
+    renderStreaks();
+  } catch (error) {
+    console.warn('Could not load live podium history:', error);
+    renderStreaks();
+  }
+}
+async function loadLiveHistory() {
+  try {
+    const indexResponse = await fetch('/api/weeks');
+    if (!indexResponse.ok) throw new Error('Weekly history unavailable');
+    const weeks = await indexResponse.json();
+    const snapshots = getSnapshots();
+    await Promise.all(weeks.map(async ({ week, sheet_name: sheetName }) => {
+      const response = await fetch(`/api/weeks/${week}`);
+      if (!response.ok) return;
+      const snapshot = await response.json();
+      snapshots[String(week)] = {
+        sheet_name: sheetName,
+        rows: snapshot.rows.map(row => ({ shift: row.shift, points: row.points, order: row.order })),
+        importedAt: new Date().toISOString()
+      };
+    }));
+    saveSnapshots(snapshots);
+    const latestWeek = Math.max(...weeks.map(item => item.week));
+    applySnapshot(latestWeek);
+    renderTable();
+    renderHistoryMatrix();
+    renderSnapshotList();
+  } catch (error) {
+    console.warn('Could not load live weekly history:', error);
+  }
 }
 function renderCalendar() {
   const week = getWalmartWeek();
@@ -214,4 +245,4 @@ $('#publish-points').addEventListener('click', publishImport);
 $('#theme-toggle').addEventListener('click', toggleTheme);
 initializeNavigation();
 showView('home');
-populateBuildings(); initializeTheme(); applySnapshot(39); renderCalendar(); renderTable(); renderHistory(); renderSnapshotList();
+populateBuildings(); initializeTheme(); applySnapshot(39); renderCalendar(); renderTable(); renderHistoryMatrix(); renderStreaks(); renderSnapshotList(); loadLiveHistory(); loadLivePodiumHistory();
