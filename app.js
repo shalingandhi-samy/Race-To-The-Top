@@ -135,8 +135,7 @@ function renderHistoryMatrix() {
       const previousRank = weekIndex === 0 ? rank : historicalRank(index, weeks[weekIndex - 1]);
       const movement = rank === null || previousRank === null ? '<span class="muted">—</span>' : rank < previousRank ? '<span class="movement-up">↑</span>' : rank > previousRank ? '<span class="movement-down">↓</span>' : '<span class="muted">—</span>';
       const rankClass = rank !== null && rank <= 3 ? `rank-${rank}` : '';
-      const medal = rank === 1 ? '<span class="history-medal" title="Gold medal" aria-label="Gold medal">&#129351;</span>' : rank === 2 ? '<span class="history-medal" title="Silver medal" aria-label="Silver medal">&#129352;</span>' : rank === 3 ? '<span class="history-medal" title="Bronze medal" aria-label="Bronze medal">&#129353;</span>' : '';
-      return `<td class="${week === 39 ? 'current-week' : ''}"><span class="rank-cell ${rankClass}">${rank === null ? '—' : String(rank).padStart(2, '0')}</span>${medal} ${movement}</td>`;
+      return `<td class="${week === 39 ? 'current-week' : ''}"><span class="rank-cell ${rankClass}">${rank === null ? '—' : String(rank).padStart(2, '0')}</span> ${movement}</td>`;
     }).join('');
     return `<tr><td>${String(index + 1).padStart(2, '0')}</td><td>${item.building} ${item.shift} ${item.department}</td>${cells}</tr>`;
   }).join('');
